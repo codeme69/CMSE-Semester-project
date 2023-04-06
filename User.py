@@ -27,7 +27,7 @@ class User():
         self.score = score
         self.gender = gender
         self.age = age
-        
+        self.relations = [] #list of all the users that this user is related to
     
     def get_name(self):
         '''
@@ -54,6 +54,16 @@ class User():
         '''
         self.score = score
         
-        
+    def add_relation(self,user):
+        '''
+        Method to add a new related user
+        '''
+        self.relations.append(user)
+    
+    def get_relations(self):
+        '''
+        Method to get a list of relations of the user
+        '''
+        return self.relations
         
     

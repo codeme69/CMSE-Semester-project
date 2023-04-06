@@ -29,11 +29,15 @@ class model():
     
     def add_user(self,user):
         '''
-        Method to get capacity
+        Add a user to the users list
         '''
         self.users.append(user)
         
     def plot(self):
+        '''
+        plot the model with users at random locations
+        
+        '''
         x_coords = [np.random.uniform(self.x-1, self.x+1) for user in self.users]
         y_coords = [np.random.uniform(self.y-1, self.y+1) for user in self.users]
         colors = np.random.rand(len(self.users))
