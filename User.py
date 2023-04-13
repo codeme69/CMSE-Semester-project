@@ -85,6 +85,12 @@ class User():
     def get_position(self):
         return self.position
     
+    def set_color(self,color="lightblue"):
+        self.color = color
+        
+    def get_color(self):
+        return self.color
+    
     def generate_random_short_name(self,length=5):
         """
         Generates a random short name of given length.
