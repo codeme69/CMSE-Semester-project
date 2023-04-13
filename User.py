@@ -97,3 +97,5 @@ class User():
         letters = string.ascii_lowercase
         random_name = ''.join(random.choice(letters) for _ in range(length))
         return random_name
+
+

@@ -123,3 +123,5 @@ class model():
         plt.clf()
         self.plot()
 
+
+
