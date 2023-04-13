@@ -34,19 +34,24 @@ def best_path(users,source,target):
 
 
 # +
-mod = model(50, 50)
+mod = model(200, 200)
 
 # Add users to the model
 user1 = User()
 user1.set_carrier(True)
+user1.set_color("blue")
 mod.add_user(user1)
 
 user2 = User(receiver=True)
+user2.set_color("red")
 mod.add_user(user2)
 
-for i in range(10):
+
+for i in range(20):
     user = User()
+    user.set_color()
     mod.add_user(user)
+    
     
 mod.set_relations()
 
