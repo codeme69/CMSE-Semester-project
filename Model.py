@@ -11,8 +11,8 @@ import string
 
 # +
 #pip install decorator==5.0.9 
+# -
 
-# +
 class model():
     '''
     A model class
@@ -62,26 +62,26 @@ class model():
                 # Skip adding self as neighbor
                 if relation == user:
                     continue
-
-                # Add the neighbor as a relation
+                
+               
                 user.add_relation(relation)
                 
-    def check_consecutive_pair(self,pair):
+    def check_consecutive_pair(self,shortest_path, pair):
         """
-        Check if a pair of values are in a users list as consecutive elements
+        Check if a pair of values are in a shortest_path as consecutive elements
         pair (tuple): Tuple of two values to check as consecutive elements in the list (order doesn't matter).
 
         Returns:
             bool: True if the pair of values are found as consecutive elements in the list, False otherwise.
         """
-        if len(self.users) < 2:
+        if len(shortest_path) < 2:
             return False
 
         pair1 = pair
         pair2 = pair[::-1]  # Reverse the pair
 
-        for i in range(len(self.users) - 1):
-            if (self.users[i] == pair1[0] and self.users[i + 1] == pair1[1]) or (self.users[i] == pair2[0] and self.users[i + 1] == pair2[1]):
+        for i in range(len(shortest_path) - 1):
+            if (shortest_path[i] == pair1[0] and shortest_path[i + 1] == pair1[1]): #or (shortest_path[i] == pair2[0] and shortest_path[i + 1] == pair2[1]):
                     
                 return True
 
@@ -92,7 +92,9 @@ class model():
         '''
         Plot the model with users and relationships
         '''
-        plt.figure(figsize=(10, 10))  # Set the size of the plot
+
+
+        plt.figure(figsize=(20, 20))  # Set the size of the plot
         
         # Create a networkx graph to represent the model
         G = nx.Graph()
@@ -114,31 +116,24 @@ class model():
         # Add relationships as edges to the graph
         for user in self.users:
             for relation in user.relations:
-                G.add_edge(user.name, relation.name)
-                if self.check_consecutive_pair((user,relation)):
+                G.add_edge(user, relation)
+                if self.check_consecutive_pair(shortest_path,(user,relation)):
                     edge_colors.append("green")
                 else:
                     edge_colors.append("gray")
         
         # Generate random x and y coordinates for each node
-        pos = nx.random_layout(G)
+        pos = nx.random_layout(G,seed=20)
         
         # Draw the nodes
         nx.draw_networkx_nodes(G, pos,nodelist=self.users, node_size=300, node_color=node_colors, edgecolors='black', linewidths=1)
         
         # Draw the edges
-        nx.draw_networkx_edges(G, pos, edge_color=edge_colors, width=1)
+        nx.draw_networkx_edges(G, pos, edge_color=edge_colors, width=[1 if color=="gray" else 3 for color in edge_colors])
         
         # Add labels to the nodes
         labels = {user: user.get_name() for user in self.users}
         nx.draw_networkx_labels(G, pos, labels, font_size=12, font_color='black')
-        
-#         # Draw the shortest path
-#         if shortest_path:
-#             shortest_path_nodes = [user.name for user in shortest_path]
-#             colors = [user.get_color() for user in shortest_path]
-#             nx.draw_networkx_nodes(G, pos, nodelist=shortest_path_nodes, node_size=300, node_color=colors, edgecolors='black', linewidths=1)
-#             nx.draw_networkx_edges(G, pos, edgelist=[(shortest_path[i-1].name, shortest_path[i].name) for i in range(1, len(shortest_path))], edge_color='green', width=3)
         
         # Add a legend
         info_patch = mpatches.Patch(color='lightblue', label='User')
