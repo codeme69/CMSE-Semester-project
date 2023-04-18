@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from ipywidgets import interact, interactive, fixed, interact_manual
 import ipywidgets as widgets
 import matplotlib.patches as mpatches
+import matplotlib.animation as animation
 import string
 
 
@@ -53,14 +54,17 @@ class model():
         for user in users:
             # Select a random number of neighbors for each user
             num_relations = random.randint(1, len(self.users))
-
+            
+            if (user.get_color()=="blue") or (user.get_color()=="red") :
+                num_relations = 2
+                
             # Select random users from the list as relations
             relations = random.sample(users, num_relations)
 
             # Add the selected neighbors as relations
             for relation in relations:
                 # Skip adding self as neighbor
-                if relation == user:
+                if (relation == user):
                     continue
                 
                
@@ -79,15 +83,15 @@ class model():
 
         pair1 = pair
         pair2 = pair[::-1]  # Reverse the pair
-
+        
         for i in range(len(shortest_path) - 1):
-            if (shortest_path[i] == pair1[0] and shortest_path[i + 1] == pair1[1]): #or (shortest_path[i] == pair2[0] and shortest_path[i + 1] == pair2[1]):
-                    
+            if (shortest_path[i].get_name() == pair1[0].get_name() and shortest_path[i + 1].get_name() == pair1[1].get_name()) or (shortest_path[i].get_name() == pair2[0].get_name() and shortest_path[i + 1].get_name() == pair2[1].get_name()):
+
                 return True
 
         return False
 
-
+    
     def plot(self,shortest_path=None):
         '''
         Plot the model with users and relationships
@@ -112,24 +116,37 @@ class model():
                 non_participants.append(user)
             else:
                 mediate_users.append(user)
-        
-        # Add relationships as edges to the graph
-        for user in self.users:
-            for relation in user.relations:
-                G.add_edge(user, relation)
-                if self.check_consecutive_pair(shortest_path,(user,relation)):
-                    edge_colors.append("green")
-                else:
-                    edge_colors.append("gray")
+                
         
         # Generate random x and y coordinates for each node
-        pos = nx.random_layout(G,seed=20)
+        pos = nx.random_layout(G)
+        
+        #add edges that are part of shortest path
+        for i in range(len(shortest_path)-1):
+            user = shortest_path[i]
+            next_user = shortest_path[i+1]
+            misinformation_weight = user.get_score()+next_user.get_score()
+            edge_colors.append("green")
+            G.add_edge(user, next_user,weight = 3,color="green")
+        
+        # Add relationships as edges that are not part of shortest path to the graph
+        for user in self.users:
+                for relation in user.get_relations():
+                    if not G.has_edge(user,relation) and not G.has_edge(relation,user):
+                        misinformation_weight = user.get_score()+relation.get_score()
+                        edge_colors.append("gray")
+                        G.add_edge(user, relation,weight = 0.5,color="gray")
+
+            
+        edges = G.edges()
+        colors = [G[u][v]['color'] for u,v in edges]
+        weights = [G[u][v]['weight'] for u,v in edges]
         
         # Draw the nodes
         nx.draw_networkx_nodes(G, pos,nodelist=self.users, node_size=300, node_color=node_colors, edgecolors='black', linewidths=1)
         
         # Draw the edges
-        nx.draw_networkx_edges(G, pos, edge_color=edge_colors, width=[1 if color=="gray" else 3 for color in edge_colors])
+        nx.draw_networkx_edges(G, pos,edge_color=colors, width=weights)
         
         # Add labels to the nodes
         labels = {user: user.get_name() for user in self.users}
@@ -142,10 +159,6 @@ class model():
         sender_patch = mpatches.Patch(color='blue', label='Sender node')
         plt.legend(handles=[info_patch, path_patch,receiver_patch,sender_patch])
         
-        # Add a reset button
-#         reset_ax = plt.axes([0.92, 0.01, 0.07, 0.05])
-#         reset_button = widgets.Button(reset_ax, 'Reset', color='lightgray')
-#         reset_button.on_clicked(self.reset_plot)
         
         plt.axis('off')  # Turn off the axis
         plt.show()  # Show the plot
@@ -156,4 +169,6 @@ class model():
         '''
         plt.clf()
         self.plot()
+
+
 
