@@ -66,9 +66,3 @@ for user in shortest_path:
     print(user.get_name())
 if shortest_path:
     mod.plot(shortest_path)
-
-# -
-
-
-
-

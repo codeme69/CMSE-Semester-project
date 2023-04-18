@@ -171,10 +171,3 @@ class model():
         self.plot()
 
 
-
-<<<<<<< HEAD
-# -
-
-
-=======
->>>>>>> 977912c4ab01ed2b463a90734688cb626f6ab59f
