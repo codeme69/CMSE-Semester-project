@@ -30,14 +30,19 @@ class User():
         self.relations = [] #list of all the users that this user is related to
         self.carrier = False
         self.receiver = receiver
-        
-        self.name = self.generate_random_short_name(5)
+    
     
     def get_name(self):
         '''
         Method to get the name of user
         '''
         return self.name 
+    
+    def set_name(self,name):
+        '''
+        Method to get the name of user
+        '''
+        self.name = name
     
     def get_age(self):
         '''
@@ -56,7 +61,7 @@ class User():
         Method to set the score of user
         score(float) : updated user score 
         '''
-        self.score = score
+        self.score = np.random.random()
         
     def add_relation(self,user):
         '''
