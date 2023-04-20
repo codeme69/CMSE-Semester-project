@@ -48,7 +48,7 @@ user1.set_color("blue")
 user1.set_name("Sender")
 mod.add_user(user1)
 
-for i in range(35):
+for i in range(50):
     user = User()
     user.set_color()
     user.set_name("{}".format(i+3))
@@ -66,3 +66,6 @@ for user in shortest_path:
     print(user.get_name())
 if shortest_path:
     mod.plot(shortest_path)
+
+# -
+

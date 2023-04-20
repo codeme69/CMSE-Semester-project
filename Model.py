@@ -8,12 +8,14 @@ import ipywidgets as widgets
 import matplotlib.patches as mpatches
 import matplotlib.animation as animation
 import string
+import time
+from IPython.display import display, clear_output
 
 
 # +
 #pip install decorator==5.0.9 
-# -
 
+# +
 class model():
     '''
     A model class
@@ -30,6 +32,8 @@ class model():
         self.y = y
         self.users = []
         self.capacity = capacity
+        self.G = nx.Graph()
+        self.node_colors = []
         
     def get_capacity(self):
         '''
@@ -44,6 +48,8 @@ class model():
         pos = (random.uniform(0,self.x), random.uniform(0,self.y))
         user.set_position(pos)
         self.users.append(user)
+        self.G.add_node(user)  
+        self.node_colors.append(user.get_color())
         
     def set_relations(self):
         
@@ -53,7 +59,7 @@ class model():
         # Add random relations between users
         for user in users:
             # Select a random number of neighbors for each user
-            num_relations = random.randint(1, len(self.users))
+            num_relations = random.randint(1, len(self.users)*0.5)
             
             if (user.get_color()=="blue") or (user.get_color()=="red") :
                 num_relations = 2
@@ -92,82 +98,144 @@ class model():
         return False
 
     
-    def plot(self,shortest_path=None):
+#     def plot(self,shortest_path=None):
+#         '''
+#         Plot the model with users and relationships
+#         '''
+
+
+#         plt.figure(figsize=(20, 20))  # Set the size of the plot
+        
+#         # Create a networkx graph to represent the model
+#         G = nx.Graph()
+        
+#         non_participants = []
+#         mediate_users = []
+#         node_colors = []
+#         edge_colors = []
+        
+#          # Add nodes to the graph
+#         for user in self.users:
+#             G.add_node(user)  
+#             node_colors.append(user.get_color())
+#             if user not in shortest_path:
+#                 non_participants.append(user)
+#             else:
+#                 mediate_users.append(user)
+                
+        
+#         # Generate random x and y coordinates for each node
+#         pos = nx.random_layout(G)
+        
+#         #add edges that are part of shortest path
+#         for i in range(len(shortest_path)-1):
+#             user = shortest_path[i]
+#             next_user = shortest_path[i+1]
+#             misinformation_weight = user.get_score()+next_user.get_score()
+#             edge_colors.append("green")
+#             G.add_edge(user, next_user,weight = 3,color="green")
+        
+#         # Add relationships as edges that are not part of shortest path to the graph
+#         for user in self.users:
+#                 for relation in user.get_relations():
+#                     if not G.has_edge(user,relation) and not G.has_edge(relation,user):
+#                         misinformation_weight = user.get_score()+relation.get_score()
+#                         edge_colors.append("gray")
+#                         G.add_edge(user, relation,weight = 0.5,color="gray")
+
+            
+#         edges = G.edges()
+#         colors = [G[u][v]['color'] for u,v in edges]
+#         weights = [G[u][v]['weight'] for u,v in edges]
+        
+#         # Draw the nodes
+#         nx.draw_networkx_nodes(G, pos,nodelist=self.users, node_size=300, node_color=node_colors, edgecolors='black', linewidths=1)
+        
+#         # Draw the edges
+#         nx.draw_networkx_edges(G, pos,edge_color=colors, width=weights)
+        
+#         # Add labels to the nodes
+#         labels = {user: user.get_name() for user in self.users}
+#         nx.draw_networkx_labels(G, pos, labels, font_size=12, font_color='black')
+        
+#         # Add a legend
+#         info_patch = mpatches.Patch(color='lightblue', label='User')
+#         path_patch = mpatches.Patch(color='green', label='Shortest Path')
+#         receiver_patch = mpatches.Patch(color='red', label='Receiver node')
+#         sender_patch = mpatches.Patch(color='blue', label='Sender node')
+#         plt.legend(handles=[info_patch, path_patch,receiver_patch,sender_patch])
+        
+        
+#         plt.axis('off')  # Turn off the axis
+#         plt.show()  # Show the plot
+
+    def plot(self, shortest_path=None):
         '''
         Plot the model with users and relationships
         '''
-
-
-        plt.figure(figsize=(20, 20))  # Set the size of the plot
         
-        # Create a networkx graph to represent the model
-        G = nx.Graph()
-        
-        non_participants = []
-        mediate_users = []
         node_colors = []
         edge_colors = []
-        
-         # Add nodes to the graph
-        for user in self.users:
-            G.add_node(user)  
-            node_colors.append(user.get_color())
-            if user not in shortest_path:
-                non_participants.append(user)
-            else:
-                mediate_users.append(user)
-                
-        
+
+
         # Generate random x and y coordinates for each node
-        pos = nx.random_layout(G)
-        
-        #add edges that are part of shortest path
-        for i in range(len(shortest_path)-1):
-            user = shortest_path[i]
-            next_user = shortest_path[i+1]
-            misinformation_weight = user.get_score()+next_user.get_score()
-            edge_colors.append("green")
-            G.add_edge(user, next_user,weight = 3,color="green")
-        
+        pos = nx.random_layout(self.G)
+
         # Add relationships as edges that are not part of shortest path to the graph
         for user in self.users:
-                for relation in user.get_relations():
-                    if not G.has_edge(user,relation) and not G.has_edge(relation,user):
-                        misinformation_weight = user.get_score()+relation.get_score()
-                        edge_colors.append("gray")
-                        G.add_edge(user, relation,weight = 0.5,color="gray")
+            for relation in user.get_relations():
+                if not self.G.has_edge(user, relation) and not self.G.has_edge(relation, user):
+                    misinformation_weight = user.get_score() + relation.get_score()
+                    edge_colors.append("gray")
+                    self.G.add_edge(user, relation, weight=0.5, color="gray")
 
-            
-        edges = G.edges()
-        colors = [G[u][v]['color'] for u,v in edges]
-        weights = [G[u][v]['weight'] for u,v in edges]
-        
-        # Draw the nodes
-        nx.draw_networkx_nodes(G, pos,nodelist=self.users, node_size=300, node_color=node_colors, edgecolors='black', linewidths=1)
-        
-        # Draw the edges
-        nx.draw_networkx_edges(G, pos,edge_color=colors, width=weights)
-        
-        # Add labels to the nodes
+#         # Draw the nodes
+#         nx.draw_networkx_nodes(self.G, pos, nodelist=self.users, node_size=300, node_color= self.node_colors, edgecolors='black',
+#                                linewidths=1)
+
+#         # Draw the edges
+#         nx.draw_networkx_edges(self.G, pos, edge_color=edge_colors, width=0.5)
+
+#         # Add labels to the nodes
         labels = {user: user.get_name() for user in self.users}
-        nx.draw_networkx_labels(G, pos, labels, font_size=12, font_color='black')
+#         nx.draw_networkx_labels(self.G, pos, labels, font_size=12, font_color='black')
+
+
+
+        green_list = []
+        # Add green edges one by one and pause for 1 second between each drawing
+        for i in range(len(shortest_path) - 1):
+            
+            plt.figure(figsize=(12, 10))    
+            user = shortest_path[i]
+            next_user = shortest_path[i + 1]
+            green_list.append((user, next_user))
+            misinformation_weight = user.get_score() + next_user.get_score()
+            edge_colors.append("green")
+            self.G.add_edge(user, next_user, weight=3, color="green")
+            edges = self.G.edges()
+            colors = [self.G[u][v]['color'] for u, v in edges]
+            weights = [self.G[u][v]['weight'] for u, v in edges]
+                        # Draw the nodes
+            nx.draw_networkx_nodes(self.G, pos, nodelist=self.users, node_size=300, node_color= self.node_colors, edgecolors='black',
+                                   linewidths=1)
+            # Draw the edges
+            nx.draw_networkx_edges(self.G, pos , edge_color=edge_colors, width=0.5)
+            nx.draw_networkx_labels(self.G, pos, labels, font_size=12, font_color='black')
+            nx.draw_networkx_edges(self.G, pos, edgelist= green_list, edge_color="green", width=3)
+            
+            # Add a legend
+            info_patch = mpatches.Patch(color='lightblue', label='User')
+            path_patch = mpatches.Patch(color='green', label='Shortest Path')
+            receiver_patch = mpatches.Patch(color='red', label='Receiver node')
+            sender_patch = mpatches.Patch(color='blue', label='Sender node')
+            plt.legend(handles=[info_patch, path_patch, receiver_patch, sender_patch])
         
-        # Add a legend
-        info_patch = mpatches.Patch(color='lightblue', label='User')
-        path_patch = mpatches.Patch(color='green', label='Shortest Path')
-        receiver_patch = mpatches.Patch(color='red', label='Receiver node')
-        sender_patch = mpatches.Patch(color='blue', label='Sender node')
-        plt.legend(handles=[info_patch, path_patch,receiver_patch,sender_patch])
-        
-        
-        plt.axis('off')  # Turn off the axis
-        plt.show()  # Show the plot
-        
-    def reset_plot(self, event):
-        '''
-        Reset the plot by clearing the current figure and resetting the shortest path
-        '''
-        plt.clf()
-        self.plot()
+            plt.pause(0.01)
+            clear_output(wait=True)
+#         plt.show()  # Show the plot
+# -
+
+
 
 
