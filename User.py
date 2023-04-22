@@ -52,6 +52,11 @@ class User():
         Method to get the age of user
         '''
         return self.age
+    def set_age(self,age):
+        '''
+        Method to get the age of user
+        '''
+        self.age=age
     
     def get_score(self):
         '''
@@ -129,5 +134,23 @@ class User():
         Method to get the reate of user
         '''
         return self.misinformation_rate
+    
+    def set_next_state(self,value):
+        '''
+        sets the predicted value if user is probable to share true or false information next time
+        '''
+        self.next_state = value
+        
+    def get_next_state(self):
+        '''
+        gets the predicted value if user is probable to share true or false information next time
+        '''
+        return self.next_state
+        
+    def get_properties(self):
+        
+        #bool
+        previous_info_shared = random.randint(0, 1)
+        return [self.score,len(self.relations),self.relation_credibility_index,self.misinformation_rate,previous_info_shared]
 
 
