@@ -23,6 +23,8 @@ class User():
         score(float) :  fraction of how many times user has shared accurate information on social media
         carrier (bool) : true if carrying information
         reciever (bool) : true if this user needs that information
+        relation credibility index (float): an overall index of how credible the user realtions are
+        misinformation_rate (float): score/number of relations
         '''
         self.score = score
         self.gender = gender
@@ -30,7 +32,8 @@ class User():
         self.relations = [] #list of all the users that this user is related to
         self.carrier = False
         self.receiver = receiver
-    
+        self.relation_credibility_index = 0
+        self.misinformation_rate = 0
     
     def get_name(self):
         '''
@@ -108,5 +111,23 @@ class User():
         letters = string.ascii_lowercase
         random_name = ''.join(random.choice(letters) for _ in range(length))
         return random_name
+    
+    def get_relation_credit(self):
+        return self.relation_credibility_index
+    
+    def set_relation_credit(self, info):
+        self.relation_credibility_index = info
+        
+    def set_misinformation_rate(self,rate):
+        '''
+        Method to set the rate of user
+        '''
+        self.misinformation_rate = rate
+    
+    def get_misinformation_rate(self):
+        '''
+        Method to get the reate of user
+        '''
+        return self.misinformation_rate
 
 

@@ -2,6 +2,7 @@ from User import User
 from Model import model
 import networkx as nx
 import matplotlib.pyplot as plt
+import pandas as pd
 
 
 # +
@@ -37,6 +38,12 @@ def best_path(users,source,target):
     return None
 
 
+
+# -
+
+df = pd.read_csv('Data.csv')
+df_short = df.head(50)
+df_short
 
 # +
 mod = model(200, 200)
