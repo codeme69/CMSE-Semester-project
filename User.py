@@ -69,7 +69,7 @@ class User():
         Method to set the score of user
         score(float) : updated user score 
         '''
-        self.score = np.random.random()
+        self.score = score
         
     def add_relation(self,user):
         '''

@@ -45,7 +45,7 @@ def best_path(users,source,target):
     
     if (nx.has_path(G,source,target)):
         # Find the shortest path between the user with information and the user that needs information
-        shortest_path = nx.shortest_path(G, source, target)
+        shortest_path = nx.shortest_path(G, source, target,weight="weight")
     
         return shortest_path
     
@@ -60,36 +60,52 @@ def best_path(users,source,target):
 # +
 mod = model(200, 200)
 
-# Add users to the model
-user1 = User()
-user1.set_carrier(True)
-user1.set_color("blue")
-user1.set_name("Sender")
-mod.add_user(user1)
+sender_list = []
+# Add senders to the model
+for i in range(5):
+    user = User()
+    user.set_carrier(True)
+    user.set_color("blue")
+    user.set_name("Sender")
+    mod.add_user(user)
+    sender_list.append(user)
 
-for i in range(50):
+#populate the model
+for i in range(100):
     user = User()
     user.set_color()
     user.set_name("{}".format(i+3))
     mod.add_user(user)
     
-user2 = User(receiver=True)
-user2.set_color("red")
-user2.set_name("Receiver")
-mod.add_user(user2)
+#add the receiver to model
+receiver_user = User(receiver=True)
+receiver_user.set_color("red")
+receiver_user.set_name("Receiver")
+mod.add_user(receiver_user)
 
 mod.set_relations()
 mod.set_user_properties()
 # -
 # ## Model Animation
 
+# +
 # Call best_path and plot functions
-shortest_path = best_path(mod.users,user1,user2)
-for user in shortest_path:
-    print(user.get_name())
-if shortest_path:
-    mod.plot(shortest_path)
+shortest_paths = []
 
+#find shortest paths from all senders to receiver
+for sender in sender_list:
+    shortest_path = best_path(mod.users,sender,receiver_user)
+    shortest_paths.append(shortest_path)
+
+#plot the model
+mod.plot(shortest_paths)
+
+# -
+
+
+# #### Misinformation weight of the shortest paths
+
+mod.print_statements()
 
 # # Building Machine Learning Model
 

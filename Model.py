@@ -27,6 +27,9 @@ class model():
         x (int) :size of model
         y (int) :size of model
         capacity (int) : maximum numbers of user allowed in model
+        G (network graph) : graph that holds and plots user nodes
+        node colors (list) : list of colors for user nodes
+        statements (list of strings): print the misformation weights info
         '''
         self.x = x
         self.y = y
@@ -34,6 +37,7 @@ class model():
         self.capacity = capacity
         self.G = nx.Graph()
         self.node_colors = []
+        self.statements = []
         
     def get_capacity(self):
         '''
@@ -63,7 +67,7 @@ class model():
         # Add random relations between users
         for user in users:
             # Select a random number of neighbors for each user
-            num_relations = random.randint(1, len(self.users)*0.5)
+            num_relations = random.randint(1, round(len(self.users)*0.5))
             
             if (user.get_color()=="blue") or (user.get_color()=="red") :
                 num_relations = 2
@@ -121,10 +125,16 @@ class model():
 
         return False
 
-    
+    def print_statements(self):
+        '''
+        prints statements of misinforamtion weight
+        
+        supposed to be print in plot function but interrupts plotting of graph
+        '''
+        for i in self.statements:
+            print(i)
 
-
-    def plot(self, shortest_path=None):
+    def plot(self, shortest_paths):
         '''
         Plot the model with users and relationships
         '''
@@ -142,44 +152,65 @@ class model():
                 if not self.G.has_edge(user, relation) and not self.G.has_edge(relation, user):
                     misinformation_weight = user.get_score() + relation.get_score()
                     edge_colors.append("gray")
-                    self.G.add_edge(user, relation, weight=0.5, color="gray")
+                    self.G.add_edge(user, relation, weight=misinformation_weight, color="gray")
 
         # Add labels to the nodes
         labels = {user: user.get_name() for user in self.users}
-    
-        green_list = []
-        # Add green edges one by one and pause for 1 second between each drawing
-        for i in range(len(shortest_path) - 1):
-            
-            plt.figure(figsize=(12, 10))    
-            user = shortest_path[i]
-            next_user = shortest_path[i + 1]
-            green_list.append((user, next_user))
-            misinformation_weight = user.get_score() + next_user.get_score()
-            edge_colors.append("green")
-            self.G.add_edge(user, next_user, weight=3, color="green")
-            edges = self.G.edges()
-            colors = [self.G[u][v]['color'] for u, v in edges]
-            weights = [self.G[u][v]['weight'] for u, v in edges]
-                        # Draw the nodes
-            nx.draw_networkx_nodes(self.G, pos, nodelist=self.users, node_size=300, node_color= self.node_colors, edgecolors='black',
-                                   linewidths=1)
-            # Draw the edges
-            nx.draw_networkx_edges(self.G, pos , edge_color=edge_colors, width=0.5)
-            nx.draw_networkx_labels(self.G, pos, labels, font_size=12, font_color='black')
-            nx.draw_networkx_edges(self.G, pos, edgelist= green_list, edge_color="green", width=3)
-            
-            # Add a legend
-            info_patch = mpatches.Patch(color='lightblue', label='User')
-            path_patch = mpatches.Patch(color='green', label='Shortest Path')
-            receiver_patch = mpatches.Patch(color='red', label='Receiver node')
-            sender_patch = mpatches.Patch(color='blue', label='Sender node')
-            plt.legend(handles=[info_patch, path_patch, receiver_patch, sender_patch])
         
-            plt.pause(0.01)
-            clear_output(wait=True)
-#         plt.show()  # Show the plot
+        plt.figure(figsize=(15, 15))    
+        shortest_path_edgelist = []
+        color_list = []  #list of colors in order for each short path edge
+        shortest_path_colors = ["green","blue","black","red","pink","orange"]
 
+        # Add green edges one by one and pause for 1 second between each drawing
+        for j,shortest_path in enumerate(shortest_paths):
+            for i in range(len(shortest_path) - 1):
+                
+                plt.figure(figsize=(15, 15))   
+                user = shortest_path[i]
+                next_user = shortest_path[i + 1]
+                shortest_path_edgelist.append((user, next_user))
+                color_list.append(shortest_path_colors[j])
+                
+                misinformation_weight = user.get_score() + next_user.get_score()
+                
+                edge_colors.append(shortest_path_colors[j])
+                self.G.add_edge(user, next_user, weight=misinformation_weight, color=shortest_path_colors[j])
+                
+                edges = self.G.edges()
+                colors = [self.G[u][v]['color'] for u, v in edges]
+                weights = [self.G[u][v]['weight'] for u, v in shortest_path_edgelist]
+                
+                # Draw the nodes
+                nx.draw_networkx_nodes(self.G, pos, nodelist=self.users, node_size=300, node_color= self.node_colors, edgecolors='black',
+                                       linewidths=1)
+                # Draw the edges
+                nx.draw_networkx_edges(self.G, pos , edge_color=edge_colors, width=0.5)
+                nx.draw_networkx_labels(self.G, pos, labels, font_size=12, font_color='black')
+                nx.draw_networkx_edges(self.G, pos, edgelist= shortest_path_edgelist, edge_color=color_list, width=3)
+                
+                for edge, weight in zip(shortest_path_edgelist, weights):
+                    if edge in shortest_path_edgelist:
+                        edge_pos = pos[edge[0]] + (pos[edge[1]] - pos[edge[0]]) / 2
+                        plt.text(edge_pos[0], edge_pos[1], f"MIW: {weight:.2f}", color='black', fontsize=12,
+                                ha='center', va='center')
+                
+                # Add a legend
+                info_patch = mpatches.Patch(color='lightblue', label='User')
+                path_patch = mpatches.Patch(color='green', label='Shortest Path')
+                receiver_patch = mpatches.Patch(color='red', label='Receiver node')
+                sender_patch = mpatches.Patch(color='blue', label='Sender node')
+                miw_patch = mpatches.Patch(color="black",label='MIW : Misiformation weight')
+                plt.legend(handles=[info_patch, path_patch, receiver_patch, sender_patch,miw_patch])
 
-
-
+                plt.pause(0.01)
+                clear_output(wait=True)
+        
+                plt.show()
+        index = 0
+        weights = [self.G[u][v]['weight'] for u, v in shortest_path_edgelist]
+        for i,shortest_path in enumerate(shortest_paths):
+            length = len(shortest_path)-1
+            total_weight = round(sum(weights[index:length+index]),2)
+            index = length
+            self.statements.append("The total misinformation weight in "+str(shortest_path_colors[i])+" path is "+ str(total_weight))
