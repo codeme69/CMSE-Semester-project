@@ -20,4 +20,4 @@ The code that needs to be executed is in the main.py file. This file requires yo
 
 ### Contributions
 
-Sriram Seelamneni: Developed the the code for user, model classes and build the ML model as a part of team. Managed to bring ideas on how to make the program better in terms of performance and relevance.
+Sriram Seelamneni  : Developed the the code for user, model classes and build the ML model as a part of team. Managed to bring ideas on how to make the program better in terms of performance and relevance.
