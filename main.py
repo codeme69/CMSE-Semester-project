@@ -253,6 +253,9 @@ plt.xlabel('Age')
 plt.ylabel('Mean Relation Credibility Index')
 plt.title('Trend in Relation Credibility Index by Age')
 plt.show()
+# -
+
+# #### The chart shows that mean relationship credibility index tends to increase with age up to around age 30, and then remains relatively stable or even decreases slightly beyond that age. This suggests that, on average, younger individuals may be perceived as having less trustworthy relationships than older individuals.
 
 # +
 import matplotlib.pyplot as plt
