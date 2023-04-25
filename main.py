@@ -190,6 +190,8 @@ for user in mod.get_users():
 
     user.set_next_state(predicted_label)
 
+# ---
+
 # ## Analysis
 
 # +
@@ -227,16 +229,19 @@ for i in range(len(x_list)):
     grid[y, x] += score_list[i]
 
 # Create a dataframe from the grid
-df = pd.DataFrame(grid)
+new_df = pd.DataFrame(grid)
 
 # Reverse the order of the rows to match the orientation of the plot
-df = df.iloc[::-1]
+new_df = new_df.iloc[::-1]
 
 # Create heatmap
-sns.heatmap(df, cmap='YlOrRd', xticklabels=False, yticklabels=False)
-plt.title(' Heatmap of User Misinformation scores')
+sns.heatmap(new_df, cmap='YlOrRd', xticklabels=False, yticklabels=False)
+plt.title('  Heatmap of User Misinformation scores')
 plt.show()
 
+# -
+
+# -------------------------------------------------
 
 # +
 import matplotlib.pyplot as plt
@@ -257,10 +262,12 @@ plt.show()
 
 # #### The chart shows that mean relationship credibility index tends to increase with age up to around age 30, and then remains relatively stable or even decreases slightly beyond that age. This suggests that, on average, younger individuals may be perceived as having less trustworthy relationships than older individuals.
 
+# ---------------------------------------
+
 # +
 import matplotlib.pyplot as plt
 
-# Create a bar chart of the number of relations by gender
+# Bar chart of the number of relations by gender
 grouped = df.groupby('gender')['num_relations'].sum()
 plt.bar(grouped.index, grouped.values)
 plt.xlabel('Gender')
@@ -272,9 +279,11 @@ plt.show()
 
 # #### The chart shows that, on average, the female group has a slightly higher credibility index than the male group. However, this difference could be due to the randomness rather than a true difference between the two groups.
 
+# -----------------------------------------------
+
 # +
 
-# Create a box plot of the misinformation rate by gender
+# Box plot of the misinformation rate by gender
 plt.boxplot([df[df['gender']=='M']['misinformation_rate'], df[df['gender']=='F']['misinformation_rate']])
 plt.xticks([2, 1], ['Male', 'Female'])
 plt.ylabel('Misinformation Rate')
@@ -283,3 +292,5 @@ plt.show()
 # -
 
 # #### Interpreting the box plot, we can see that the median misinformation rate for both genders is around 0.5, with a slightly larger spread in the male group. The range for the female group is slightly smaller than for the male group, indicating that the female group has less variability in their misinformation rate.
+
+# ------------------------------------------
