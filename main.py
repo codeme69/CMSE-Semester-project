@@ -99,7 +99,6 @@ for sender in sender_list:
 
 #plot the model
 mod.plot(shortest_paths)
-
 # -
 
 
@@ -190,3 +189,54 @@ for user in mod.get_users():
     predicted_label = svm_clf.predict([feature_vectors])[0]
 
     user.set_next_state(predicted_label)
+
+# ## Analysis
+
+# +
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# Your provided data
+score_list = []
+x_list = []
+y_list = []
+for i in mod.get_users():
+    score_list.append(i.score)
+    x_list.append(i.position[0])
+    y_list.append(i.position[1])
+    
+# Get the minimum and maximum x and y values
+x_min, x_max = min(x_list), max(x_list)
+y_min, y_max = min(y_list), max(y_list)
+
+# Define the bin size
+bin_size = 10
+
+# Calculate the number of bins in each direction
+num_bins_x = int((x_max - x_min) / bin_size) + 1
+num_bins_y = int((y_max - y_min) / bin_size) + 1
+
+# Create a grid of zeros to store the scores in each bin
+grid = np.zeros((num_bins_y, num_bins_x))
+
+# Loop over each point and add its score to the corresponding bin
+for i in range(len(x_list)):
+    x = int((x_list[i] - x_min) / bin_size)
+    y = int((y_list[i] - y_min) / bin_size)
+    grid[y, x] += score_list[i]
+
+# Create a dataframe from the grid
+df = pd.DataFrame(grid)
+
+# Reverse the order of the rows to match the orientation of the plot
+df = df.iloc[::-1]
+
+# Create heatmap
+sns.heatmap(df, cmap='YlOrRd', xticklabels=False, yticklabels=False)
+plt.title(' Heatmap of User Misinformation scores')
+plt.show()
+
+# -
+
+
