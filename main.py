@@ -111,7 +111,7 @@ mod.print_statements()
 # ### Loading the manual dataset
 
 df = pd.read_csv("cmse202_dataset.csv")
-df
+df['age']
 
 # ### Creating the training and testing data for ML model
 
@@ -237,6 +237,46 @@ sns.heatmap(df, cmap='YlOrRd', xticklabels=False, yticklabels=False)
 plt.title(' Heatmap of User Misinformation scores')
 plt.show()
 
+
+# +
+import matplotlib.pyplot as plt
+
+# Sort the DataFrame by age
+df = df.sort_values('age')
+
+# Group the DataFrame by age and calculate the mean relation credibility index for each age
+grouped = df.groupby('age')['relation_credibility_index'].mean()
+
+# Create the line chart
+plt.plot(grouped.index, grouped.values)
+plt.xlabel('Age')
+plt.ylabel('Mean Relation Credibility Index')
+plt.title('Trend in Relation Credibility Index by Age')
+plt.show()
+
+# +
+import matplotlib.pyplot as plt
+
+# Create a bar chart of the number of relations by gender
+grouped = df.groupby('gender')['num_relations'].sum()
+plt.bar(grouped.index, grouped.values)
+plt.xlabel('Gender')
+plt.ylabel('Total Number of Relations')
+plt.title('Distribution of Relations by Gender')
+plt.show()
+
 # -
 
+# #### The chart shows that, on average, the female group has a slightly higher credibility index than the male group. However, this difference could be due to the randomness rather than a true difference between the two groups.
 
+# +
+
+# Create a box plot of the misinformation rate by gender
+plt.boxplot([df[df['gender']=='M']['misinformation_rate'], df[df['gender']=='F']['misinformation_rate']])
+plt.xticks([2, 1], ['Male', 'Female'])
+plt.ylabel('Misinformation Rate')
+plt.title('Misinformation Rate by Gender')
+plt.show()
+# -
+
+# #### Interpreting the box plot, we can see that the median misinformation rate for both genders is around 0.5, with a slightly larger spread in the male group. The range for the female group is slightly smaller than for the male group, indicating that the female group has less variability in their misinformation rate.
