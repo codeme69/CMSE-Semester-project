@@ -20,4 +20,12 @@ The code that needs to be executed is in the main.py file. This file requires yo
 
 ### Contributions
 
-Sriram Seelamneni  : Developed the the code for user, model classes and build the ML model as a part of team. Managed to bring ideas on how to make the program better in terms of performance and relevance.
+Sreeram: Developed the code for user and model classes and built the ML model as a part of team. Managed to bring ideas on how to make the program better in terms of performance and relevance.  Brainstormed ideas for the overall project development.
+
+Sai: Worked on the development of the user and model. Also managed to create the analysis for the project. Brainstormed ideas for the overall project development.
+
+Sanjana: Worked on delegating tasks to each member based on their abilities. Initiated the group meetings and created the slides.  Brainstormed ideas for the overall project development and worked on the user class code. 
+
+Pranta: Helped to create the slides and contributed to the group meetings. Helped give out ideas for the model class code.
+
+Jialin: Attended most of the group meetings and contributed to the slides. Did most of the design in the slides.
